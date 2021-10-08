@@ -83,6 +83,6 @@ public class SimpleSqliteApplication implements CommandLineRunner{
 	public void printAll() {
 		List<Text> list = service.getAll();
 		for(Text t: list)
-		System.out.println(t);
+		System.out.println(t.getId()==null? "null":t.getId().toString() +" | " +t.getContent());
 	}
 }

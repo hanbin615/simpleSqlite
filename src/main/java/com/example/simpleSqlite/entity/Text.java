@@ -8,16 +8,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "USER")
+@Table(name = "TEXT")
+@NoArgsConstructor
 public class Text {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
-	public int id;
+	public Integer id;
 
 	@Column(name = "CONTENT")
 	public String content;
@@ -25,10 +27,5 @@ public class Text {
 	public Text(String s) {
 		super();
 		this.content = s;
-	}
-	
-	@Override
-	public String toString() {
-		return this.content;
 	}
 }
