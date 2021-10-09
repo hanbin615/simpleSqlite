@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import com.example.simpleSqlite.entity.Text;
 import com.example.simpleSqlite.repository.TextRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TextService {
 
 	@Autowired
@@ -21,18 +24,30 @@ public class TextService {
 	
 	@Autowired
 	DataSource datasource;
-/*	
-	public void execute(String s) {
+	
+	public void dropTable() {
+		log.info("dropping table TEXT");
 		try(Connection conn = datasource.getConnection();){
 			Statement stmt = conn.createStatement();
-			stmt.execute(s);
-			
+			stmt.execute("DROP TABLE TEXT");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void createTableIfNotExists() {
+		log.info("creating table TEXT if not exists");
+		try(Connection conn = datasource.getConnection();){
+			Statement stmt = conn.createStatement();
+			stmt.execute("CREATE TABLE IF NOT EXISTS TEXT("
+					+ "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "CONTENT TEXT)");
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-*/	
+	
 	public Text save(String s) {
 		return repository.save(new Text(s));
 	}

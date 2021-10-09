@@ -3,10 +3,7 @@ package com.example.simpleSqlite;
 import java.util.List;
 import java.util.Scanner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,13 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.example.simpleSqlite.entity.Text;
 import com.example.simpleSqlite.service.TextService;
 
-@SpringBootApplication
-public class SimpleSqliteApplication implements CommandLineRunner{
-	
-	private static Logger log = LoggerFactory.getLogger(SimpleSqliteApplication.class);
+import lombok.extern.slf4j.Slf4j;
 
-	@Value( "${properties-test}" )
-	private String properties_test;
+@SpringBootApplication
+@Slf4j
+public class SimpleSqliteApplication implements CommandLineRunner{
 	
 	@Autowired
 	TextService service;
@@ -31,6 +26,9 @@ public class SimpleSqliteApplication implements CommandLineRunner{
 		log.info("ENDING   spring boot application");
 	}
 
+	/**
+	 * launch console after setting up spring
+	 */
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("Executing: command line runner");
@@ -43,41 +41,53 @@ public class SimpleSqliteApplication implements CommandLineRunner{
 				log.info("args[{}]: {}", i++, s);
 			}
 		}
-//		checkProperties();
-		loop();
+		consoleLoop();
 		log.info("Ending: command line runner");
 	}
 	
-	public void loop() {
-		log.info("starting loop");
+	public void printUsage() {
+		System.out.println("type 'create' to create the table");
+		System.out.println("type 'drop' to drop the table");
+		System.out.println("type 'print' to print out all entries");
+		System.out.println("type 'end', 'quit' or 'exit' to quit");
+		System.out.println("type any other text and it will be added to the table");
+	}
+	
+	public void consoleLoop() {
+		log.info("starting consoleLoop");
+		printUsage();
 		Scanner in = new Scanner(System.in);
 		boolean end = false;
 		while(!end) {
 			String s = in.nextLine();
-			switch(s) {
-//				case "":
-				case "exit()": {
-					System.out.println("byebye");
-					in.close();
-					end = true;
+			try {
+				switch(s) {
+					case "end":
+					case "quit":
+					case "exit": 
+						System.out.println("byebye");
+						in.close();
+						end = true;
+						break;
+					case "print": 
+						printAll();
+						break;
+					case "drop": 
+						service.dropTable();
+						break;
+					case "create":
+						service.createTableIfNotExists();
+						break;
+					default: 
+						service.save(s);
+						break;
 				}
-				default: {
-					service.save(s);
-					printAll();
-				}
+			} catch (RuntimeException e) {
+				System.err.println("ERROR");
+//				e.printStackTrace();
 			}
 		}
-		log.info("ending loop");
-	}
-	
-	public void checkProperties() {
-		log.info("checking properties ...");
-		if (properties_test == null) {
-			log.info("properties = null");
-		} else {
-			log.info("properties = {}", properties_test);
-		}
-		log.info("checking properties COMPLETED");		
+		log.info("ending ConsoleLoop");
 	}
 
 	public void printAll() {
